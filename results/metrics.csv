@@ -1,0 +1,6 @@
+task,representation,model,metric,value,unit,source
+classification,TF-IDF,Linear SVM,Accuracy,82.39,percent,original course report
+classification,TF-IDF,Linear SVM,Macro-F1,82.65,percent,original course report
+classification,TF-IDF,Logistic Regression,Accuracy,82.13,percent,original course report
+classification,TF-IDF,Logistic Regression,Macro-F1,82.47,percent,original course report
+clustering,TF-IDF,KMeans,NMI,0.1740,score,original course report
