@@ -14,6 +14,15 @@ The dataset is not included in this repository. Raw news articles are not redist
 
 See [`data/README.md`](data/README.md) for the current data policy and the planned local data location.
 
+## My Role
+
+I completed this coursework project independently, including data exploration, text representation, model comparison, clustering analysis, result visualization, and report writing.
+
+## Portfolio Relevance
+
+This project demonstrates my ability to organize a standard text-mining workflow, including dataset description, feature extraction, supervised classification, unsupervised clustering, model evaluation, result visualization, and limitation reporting.
+
+
 ## Methods Reported in the Original Course Submission
 
 ### Text representations
@@ -108,3 +117,4 @@ The archived scripts may require data-path, dependency, and implementation revie
 ## Course Report
 
 The original report contains personal and course-administration information and is not included. See [`report/README.md`](report/README.md) for the publication policy.
+
