@@ -1,0 +1,90 @@
+{
+  "classification": {
+    "clean_baseline": {
+      "class_labels": [
+        "体育",
+        "娱乐",
+        "家居",
+        "房产",
+        "教育",
+        "时尚",
+        "时政",
+        "游戏",
+        "科技",
+        "财经"
+      ],
+      "test_rows": 10000,
+      "tfidf_fit_scope": "inside each cross-validation fold via sklearn Pipeline",
+      "train_rows": 40000
+    },
+    "historical_compat": {
+      "class_labels": [
+        "体育",
+        "娱乐",
+        "家居",
+        "房产",
+        "教育",
+        "时尚",
+        "时政",
+        "游戏",
+        "科技",
+        "财经"
+      ],
+      "feature_count": 5000,
+      "test_rows": 10000,
+      "tfidf_fit_scope": "complete outer training split before cross-validation",
+      "train_rows": 40000
+    }
+  },
+  "clustering": {
+    "feature_count": 5000,
+    "n_clusters": 10,
+    "sample_count": 50000,
+    "svd_used": false
+  },
+  "configs": {
+    "clean_baseline_sha256": "c22c2ce40ac9e12df03714afe65cc3045b83afc1b0c085566bd9aff9491645ef",
+    "historical_compat_sha256": "46315e9bbeed65f41de34621465b711d3c5b0dd7373bb03ff89b1a553b5128fc"
+  },
+  "dataset": {
+    "class_count": 10,
+    "encoding": "utf-8",
+    "format": "label<TAB>text",
+    "invalid_row_count": 0,
+    "label_counts": {
+      "体育": 5000,
+      "娱乐": 5000,
+      "家居": 5000,
+      "房产": 5000,
+      "教育": 5000,
+      "时尚": 5000,
+      "时政": 5000,
+      "游戏": 5000,
+      "科技": 5000,
+      "财经": 5000
+    },
+    "row_count": 50000,
+    "sha256": "7e8710f786b03f8e7cad7230141446a405757f335d91c2ed64187cfaf30c6330",
+    "size_bytes": 130089129
+  },
+  "environment": {
+    "packages": {
+      "joblib": "1.5.3",
+      "numpy": "2.2.6",
+      "pandas": "2.3.3",
+      "scikit-learn": "1.7.2",
+      "scipy": "1.15.3"
+    },
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.12.13"
+  },
+  "git_commit": "65c03ece63e4dc12026b9267d9450077c1c382d5",
+  "phase": "Phase 1B-minimal",
+  "run_id": "20260619T193149Z",
+  "scope": {
+    "bert_run": false,
+    "doc2vec_run": false,
+    "svd_kmeans_run": false,
+    "word2vec_run": false
+  }
+}

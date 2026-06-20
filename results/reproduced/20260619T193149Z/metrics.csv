@@ -1,0 +1,10 @@
+run_id,result_type,task,representation,model,metric,value,unit,best_params,source
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Linear SVM,Accuracy,82.39,percent,"{""C"": 0.5}",Phase 1B-minimal regenerated run
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Linear SVM,Macro-F1,82.64614587213688,percent,"{""C"": 0.5}",Phase 1B-minimal regenerated run
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Logistic Regression,Accuracy,82.13000000000001,percent,"{""C"": 2.0}",Phase 1B-minimal regenerated run
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Logistic Regression,Macro-F1,82.46797274872645,percent,"{""C"": 2.0}",Phase 1B-minimal regenerated run
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Linear SVM,Accuracy,82.39,percent,"{""C"": 0.5}",Phase 1B-minimal regenerated run
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Linear SVM,Macro-F1,82.64614587213688,percent,"{""C"": 0.5}",Phase 1B-minimal regenerated run
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Logistic Regression,Accuracy,82.13000000000001,percent,"{""C"": 2.0}",Phase 1B-minimal regenerated run
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Logistic Regression,Macro-F1,82.46797274872645,percent,"{""C"": 2.0}",Phase 1B-minimal regenerated run
+20260619T193149Z,direct_tfidf_kmeans_regenerated,clustering,TF-IDF,KMeans,NMI,0.18833817212523157,score,"{""n_clusters"": 10, ""n_init"": 10, ""random_state"": 42}",Phase 1B-minimal regenerated run

@@ -1,0 +1,10 @@
+run_id,result_type,task,representation,model,metric,historical_value,regenerated_value,absolute_delta,unit,verification_status
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Linear SVM,Accuracy,82.39,82.39,0.0,percent,exact_at_reported_precision
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Linear SVM,Macro-F1,82.65,82.64614587213688,0.003854127863121448,percent,exact_at_reported_precision
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Logistic Regression,Accuracy,82.13,82.13000000000001,1.4210854715202004e-14,percent,exact_at_reported_precision
+20260619T193149Z,historical_compat_regenerated,classification,TF-IDF,Logistic Regression,Macro-F1,82.47,82.46797274872645,0.0020272512735459713,percent,exact_at_reported_precision
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Linear SVM,Accuracy,82.39,82.39,0.0,percent,exact_at_reported_precision
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Linear SVM,Macro-F1,82.65,82.64614587213688,0.003854127863121448,percent,exact_at_reported_precision
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Logistic Regression,Accuracy,82.13,82.13000000000001,1.4210854715202004e-14,percent,exact_at_reported_precision
+20260619T193149Z,clean_baseline_regenerated,classification,TF-IDF,Logistic Regression,Macro-F1,82.47,82.46797274872645,0.0020272512735459713,percent,exact_at_reported_precision
+20260619T193149Z,direct_tfidf_kmeans_regenerated,clustering,TF-IDF,KMeans,NMI,0.174,0.18833817212523157,0.014338172125231585,score,not_reproduced
