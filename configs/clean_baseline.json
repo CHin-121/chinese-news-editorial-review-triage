@@ -1,0 +1,38 @@
+{
+  "name": "clean_baseline",
+  "result_type": "clean_baseline_regenerated",
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratify": true
+  },
+  "tfidf": {
+    "max_features": 5000,
+    "ngram_range": [1, 2],
+    "min_df": 5
+  },
+  "cross_validation": {
+    "folds": 5,
+    "scoring": "f1_macro",
+    "n_jobs": -1
+  },
+  "models": {
+    "Linear SVM": {
+      "dual": false,
+      "random_state": 42,
+      "C": [0.1, 0.5, 1.0, 2.0]
+    },
+    "Logistic Regression": {
+      "solver": "liblinear",
+      "max_iter": 500,
+      "random_state": 42,
+      "C": [0.1, 0.5, 1.0, 2.0]
+    }
+  },
+  "kmeans": {
+    "n_clusters": 10,
+    "n_init": 10,
+    "random_state": 42,
+    "result_type": "direct_tfidf_kmeans_regenerated"
+  }
+}

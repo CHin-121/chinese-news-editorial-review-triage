@@ -1,0 +1,41 @@
+{
+  "name": "historical_compat",
+  "result_type": "historical_compat_regenerated",
+  "dataset": {
+    "expected_size_bytes": 130089129,
+    "expected_sha256": "7e8710f786b03f8e7cad7230141446a405757f335d91c2ed64187cfaf30c6330"
+  },
+  "split": {
+    "test_size": 0.2,
+    "random_state": 42,
+    "stratify": true
+  },
+  "tfidf": {
+    "max_features": 5000,
+    "ngram_range": [1, 2],
+    "min_df": 5
+  },
+  "cross_validation": {
+    "folds": 5,
+    "scoring": "f1_macro",
+    "n_jobs": -1
+  },
+  "models": {
+    "Linear SVM": {
+      "dual": false,
+      "C": [0.1, 0.5, 1.0, 2.0]
+    },
+    "Logistic Regression": {
+      "solver": "liblinear",
+      "max_iter": 500,
+      "C": [0.1, 0.5, 1.0, 2.0]
+    }
+  },
+  "historical_metrics": [
+    {"task": "classification", "representation": "TF-IDF", "model": "Linear SVM", "metric": "Accuracy", "value": 82.39, "unit": "percent"},
+    {"task": "classification", "representation": "TF-IDF", "model": "Linear SVM", "metric": "Macro-F1", "value": 82.65, "unit": "percent"},
+    {"task": "classification", "representation": "TF-IDF", "model": "Logistic Regression", "metric": "Accuracy", "value": 82.13, "unit": "percent"},
+    {"task": "classification", "representation": "TF-IDF", "model": "Logistic Regression", "metric": "Macro-F1", "value": 82.47, "unit": "percent"},
+    {"task": "clustering", "representation": "TF-IDF", "model": "KMeans", "metric": "NMI", "value": 0.1740, "unit": "score"}
+  ]
+}
