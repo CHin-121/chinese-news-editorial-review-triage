@@ -137,3 +137,68 @@ def write_outputs(
         handle.write("\n")
 
     return run_directory
+
+
+def write_editorial_triage_outputs(
+    output_root: str | Path,
+    run_id: str,
+    analysis: dict[str, Any],
+) -> Path:
+    """Write exactly the five aggregate outputs approved for Phase 1C-minimal."""
+    summary = analysis["summary"]
+    assert_metadata_private(summary)
+    run_directory = Path(output_root) / run_id
+    run_directory.mkdir(parents=True, exist_ok=False)
+
+    with (run_directory / "per_class_report.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as handle:
+        fields = ["class_label", "precision", "recall", "f1", "support"]
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(analysis["per_class_report"])
+
+    with (run_directory / "confusion_matrix.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["true_label", *analysis["class_labels"]])
+        for class_label, row in zip(
+            analysis["class_labels"], analysis["confusion_matrix"], strict=True
+        ):
+            writer.writerow([class_label, *(int(value) for value in row)])
+
+    with (run_directory / "top_confusion_pairs.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as handle:
+        fields = [
+            "true_label",
+            "predicted_label",
+            "error_count",
+            "share_of_total_errors",
+        ]
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(analysis["top_confusion_pairs"])
+
+    with (run_directory / "review_triage_curve.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as handle:
+        fields = [
+            "budget_percent",
+            "reviewed_count",
+            "captured_error_count",
+            "share_of_all_errors_captured",
+            "errors_found_per_100_reviewed",
+        ]
+        writer = csv.DictWriter(handle, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(analysis["review_triage_curve"])
+
+    with (run_directory / "review_priority_summary.json").open(
+        "w", encoding="utf-8"
+    ) as handle:
+        json.dump(summary, handle, ensure_ascii=False, indent=2, sort_keys=True)
+        handle.write("\n")
+
+    return run_directory

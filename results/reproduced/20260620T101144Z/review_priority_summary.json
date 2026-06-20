@@ -1,0 +1,33 @@
+{
+  "accuracy": 0.8239,
+  "macro_f1": 0.8264614587213688,
+  "model": "TF-IDF + Linear SVM",
+  "review_margin_definition": "top1_decision_score - top2_decision_score",
+  "review_triage_results": [
+    {
+      "budget_percent": 5.0,
+      "captured_error_count": 326,
+      "errors_found_per_100_reviewed": 65.2,
+      "reviewed_count": 500,
+      "share_of_all_errors_captured": 0.185122089721749
+    },
+    {
+      "budget_percent": 10.0,
+      "captured_error_count": 629,
+      "errors_found_per_100_reviewed": 62.9,
+      "reviewed_count": 1000,
+      "share_of_all_errors_captured": 0.35718341851220897
+    },
+    {
+      "budget_percent": 20.0,
+      "captured_error_count": 1058,
+      "errors_found_per_100_reviewed": 52.900000000000006,
+      "reviewed_count": 2000,
+      "share_of_all_errors_captured": 0.6007950028392959
+    }
+  ],
+  "run_id": "20260620T101144Z",
+  "selected_c": 0.5,
+  "total_errors": 1761,
+  "total_test_samples": 10000
+}

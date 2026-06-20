@@ -2,11 +2,18 @@
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    f1_score,
+    precision_recall_fscore_support,
+)
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
@@ -163,3 +170,140 @@ def run_clean_baseline(
             "tfidf_fit_scope": "inside each cross-validation fold via sklearn Pipeline",
         },
     }
+
+
+def build_editorial_triage_analysis(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    decision_scores: np.ndarray,
+    class_labels: list[str],
+    *,
+    budgets: tuple[float, ...] = (0.05, 0.10, 0.20),
+) -> dict[str, Any]:
+    """Build aggregate classification and review-triage outputs without text."""
+    if decision_scores.ndim != 2 or decision_scores.shape[1] != len(class_labels):
+        raise ValueError("Decision scores must have one column per class.")
+    if len(y_true) != len(y_pred) or len(y_true) != decision_scores.shape[0]:
+        raise ValueError("Labels, predictions, and decision scores must align.")
+
+    label_ids = np.arange(len(class_labels))
+    matrix = confusion_matrix(y_true, y_pred, labels=label_ids)
+    precision, recall, f1_values, support = precision_recall_fscore_support(
+        y_true,
+        y_pred,
+        labels=label_ids,
+        zero_division=0,
+    )
+    per_class_report = [
+        {
+            "class_label": class_label,
+            "precision": float(precision[index]),
+            "recall": float(recall[index]),
+            "f1": float(f1_values[index]),
+            "support": int(support[index]),
+        }
+        for index, class_label in enumerate(class_labels)
+    ]
+
+    error_mask = y_true != y_pred
+    total_errors = int(error_mask.sum())
+    confusion_pairs = []
+    for true_index, true_label in enumerate(class_labels):
+        for predicted_index, predicted_label in enumerate(class_labels):
+            if true_index == predicted_index:
+                continue
+            error_count = int(matrix[true_index, predicted_index])
+            if error_count == 0:
+                continue
+            confusion_pairs.append(
+                {
+                    "true_label": true_label,
+                    "predicted_label": predicted_label,
+                    "error_count": error_count,
+                    "share_of_total_errors": (
+                        error_count / total_errors if total_errors else 0.0
+                    ),
+                }
+            )
+    confusion_pairs.sort(
+        key=lambda row: (-row["error_count"], row["true_label"], row["predicted_label"])
+    )
+
+    top_two_scores = np.partition(decision_scores, -2, axis=1)[:, -2:]
+    review_margins = top_two_scores.max(axis=1) - top_two_scores.min(axis=1)
+    review_order = np.argsort(review_margins, kind="stable")
+    triage_curve = []
+    for budget in budgets:
+        if not 0 < budget <= 1:
+            raise ValueError("Review budgets must be in the interval (0, 1].")
+        reviewed_count = min(len(y_true), math.ceil(len(y_true) * budget))
+        reviewed_indices = review_order[:reviewed_count]
+        captured_error_count = int(error_mask[reviewed_indices].sum())
+        triage_curve.append(
+            {
+                "budget_percent": budget * 100.0,
+                "reviewed_count": reviewed_count,
+                "captured_error_count": captured_error_count,
+                "share_of_all_errors_captured": (
+                    captured_error_count / total_errors if total_errors else 0.0
+                ),
+                "errors_found_per_100_reviewed": (
+                    captured_error_count / reviewed_count * 100.0
+                    if reviewed_count
+                    else 0.0
+                ),
+            }
+        )
+
+    summary = {
+        "total_test_samples": int(len(y_true)),
+        "total_errors": total_errors,
+        "accuracy": float(accuracy_score(y_true, y_pred)),
+        "macro_f1": float(f1_score(y_true, y_pred, average="macro")),
+        "review_triage_results": triage_curve,
+    }
+    return {
+        "class_labels": class_labels,
+        "per_class_report": per_class_report,
+        "confusion_matrix": matrix,
+        "top_confusion_pairs": confusion_pairs,
+        "review_triage_curve": triage_curve,
+        "summary": summary,
+    }
+
+
+def run_editorial_triage(
+    texts: list[str],
+    labels: list[str],
+    config: dict[str, Any],
+    *,
+    selected_c: float,
+) -> dict[str, Any]:
+    """Fit the selected clean TF-IDF + Linear SVM model and audit test errors."""
+    X_train, X_test, y_train, y_test, classes = _split_and_encode(texts, labels, config)
+    model_config = config["models"]["Linear SVM"]
+    classifier = _estimator("Linear SVM", model_config, clean=True)
+    classifier.set_params(C=selected_c)
+    pipeline = Pipeline(
+        [
+            ("tfidf", _vectorizer(config)),
+            ("classifier", classifier),
+        ]
+    )
+    pipeline.fit(X_train, y_train)
+    prediction = pipeline.predict(X_test)
+    decision_scores = pipeline.decision_function(X_test)
+    analysis = build_editorial_triage_analysis(
+        y_test,
+        prediction,
+        decision_scores,
+        classes,
+    )
+    analysis["summary"].update(
+        {
+            "model": "TF-IDF + Linear SVM",
+            "selected_c": selected_c,
+            "review_margin_definition": "top1_decision_score - top2_decision_score",
+        }
+    )
+    return analysis
