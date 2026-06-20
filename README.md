@@ -1,12 +1,31 @@
-# Chinese News Classification and Clustering
+# Chinese News Auto-Categorization and Editorial Review Triage
 
 ## Project Overview
 
-This historical coursework project compares classical text representations and machine-learning methods for Chinese news classification and clustering. The original course submission used a THUCNews/cnews subset reported to contain approximately 50,000 Chinese news articles across 10 categories.
+This project reframes a historical Chinese news classification and clustering coursework project as a data science case study for automatic news categorization and editorial review prioritization.
 
-This repository preserves the original course scripts and organizes the reported methods, figures, and selected results for portfolio presentation.
+The practical problem is: given a large set of Chinese news articles, how can a news platform automatically assign articles to categories while also identifying low-confidence predictions that should be prioritized for human editorial review?
 
-> This repository is a cleaned presentation copy of a historical coursework project. The reported results are taken from the original course submission and are currently undergoing reproducibility verification. The scripts are archived for transparency, but the current Phase 1A release does not claim end-to-end reproducibility.
+## Key Findings
+
+- The dataset contains 50,000 Chinese news articles across 10 balanced categories.
+- The TF-IDF + Linear SVM model achieved 82.39% Accuracy and 82.65% Macro-F1 on a 10,000-article test set.
+- Four historical classification metrics from the original course report were reproduced at reported precision.
+- Error analysis identified high-risk confusion pairs, including 家居 → 时尚 and 时尚 → 家居.
+- Reviewing the lowest-confidence 10% of articles captured 35.72% of all classification errors.
+- Reviewing the lowest-confidence 20% of articles captured 60.08% of all classification errors.
+- Direct TF-IDF + KMeans did not reproduce the historical NMI result, so clustering is treated as a diagnostic appendix.
+
+## Project Phases
+
+- **Phase 1A: Presentation cleanup**  
+  Organized the historical coursework scripts, selected results, dataset policy, and reproducibility disclaimer.
+
+- **Phase 1B: Reproducibility audit**  
+  Added an independent reproducibility pipeline and reproduced the historical TF-IDF classification results.
+
+- **Phase 1C: Editorial review triage analysis**  
+  Used Linear SVM decision margins to prioritize low-confidence articles for human review.
 
 ## Dataset Note
 
