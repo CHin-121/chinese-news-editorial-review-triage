@@ -10,6 +10,18 @@ The practical problem is:
 
 The original coursework compared classical text representations and machine-learning methods for Chinese news classification and clustering. I later extended it into a reproducibility-audited text analytics project with error diagnosis and decision-margin-based review triage.
 
+## Plain-language Summary
+
+This project asks a practical question: after a model automatically classifies Chinese news articles, can it also identify which predictions are more likely to be wrong and should be checked by a human editor first?
+
+Using 50,000 Chinese news articles across 10 categories, I built a TF-IDF + Linear SVM classifier and achieved 82.39% Accuracy and 82.65% Macro-F1 on a held-out test set. I then analyzed the model's errors using confusion matrices and per-class results, identifying high-risk category confusions such as home-related and fashion news.
+
+Instead of stopping at classification accuracy, I designed a review triage workflow. The model's decision margin was used as a low-confidence signal, so articles with smaller margins were prioritized for human review. Reviewing the lowest-confidence 10% of articles captured 35.72% of all classification errors.
+
+In Phase 1D, I added probability calibration to make model confidence more interpretable. Raw SVM margins are useful for ranking uncertain predictions, but they are not probabilities. After sigmoid calibration, the model achieved 82.61% Accuracy, 82.87% Macro-F1, 0.6004 Log Loss, 0.2533 Brier Score, and 0.0529 top-label ECE. Using calibrated confidence for review triage, reviewing the lowest-confidence 10% of articles captured 36.97% of all classification errors.
+
+This project is an offline, reproducibility-audited analysis. It does not claim production deployment; its focus is on classification, error diagnosis, confidence evaluation, and human-review prioritization.
+
 ## Key Findings
 
 * The dataset contains **50,000 Chinese news articles** across **10 balanced categories**.
@@ -20,6 +32,8 @@ The original coursework compared classical text representations and machine-lear
 * Error analysis identified high-risk confusion pairs, including **家居 → 时尚** and **时尚 → 家居**.
 * Reviewing the lowest-confidence **10%** of articles captured **35.72%** of all classification errors.
 * Reviewing the lowest-confidence **20%** of articles captured **60.08%** of all classification errors.
+* Sigmoid-calibrated Linear SVM achieved **82.61% Accuracy**, **82.87% Macro-F1**, and **0.0529 top-label ECE** in the Phase 1D offline calibration run.
+* Reviewing the lowest calibrated-confidence **10%** of articles captured **36.97%** of all raw Linear SVM classification errors.
 * Direct TF-IDF + KMeans did not reproduce the historical NMI result, so clustering is treated as a diagnostic appendix rather than the main contribution.
 
 ## Project Phases
@@ -36,6 +50,10 @@ Added an independent reproducibility pipeline to validate the local dataset, reg
 
 Extended the classification model into a decision-support workflow. Linear SVM decision margins were used to rank low-confidence predictions for potential human editorial review.
 
+### Phase 1D: Calibrated Confidence Analysis
+
+Added an offline probability-calibration extension to evaluate whether calibrated confidence provides a more interpretable signal for review allocation than raw Linear SVM decision margins.
+
 ## Practical Data Science Framing
 
 The project is not only a text classification exercise. It follows a complete data science workflow:
@@ -46,7 +64,8 @@ The project is not only a text classification exercise. It follows a complete da
 4. reproduce and audit historical metrics;
 5. diagnose errors using class-level reports and confusion matrices;
 6. rank low-confidence predictions for human review;
-7. document limitations and avoid overclaiming reproducibility.
+7. evaluate calibrated confidence for uncertainty-aware review allocation;
+8. document limitations and avoid overclaiming reproducibility.
 
 ## Dataset Note
 
@@ -74,6 +93,7 @@ It covers:
 * classification metric interpretation;
 * error diagnosis through confusion analysis;
 * human-in-the-loop review prioritization;
+* probability calibration and uncertainty-aware model evaluation;
 * clear documentation of data and reproducibility limitations.
 
 For data science master’s applications, this project highlights my ability to connect Chinese-language text analysis with measurable model evaluation and decision-oriented analytics.
@@ -111,6 +131,14 @@ A smaller margin means the model is less confident because the top two category 
 
 This margin is **not a probability**. It is used only as a ranking signal for review prioritization.
 
+### Calibrated Confidence Analysis
+
+Phase 1D keeps the TF-IDF + Linear SVM workflow and adds sigmoid probability calibration with `CalibratedClassifierCV`. It compares raw SVM decision-margin ranking with calibrated top-label confidence and a random-review expected baseline.
+
+The calibration analysis reports Log Loss, multiclass Brier Score, top-label Expected Calibration Error, confidence-bin summaries, reliability diagrams, confidence histograms, and review-budget error-capture curves.
+
+This phase is an offline diagnostic analysis. It does not claim production deployment or real newsroom reliability.
+
 ## Main Results
 
 ### Classification Results
@@ -135,6 +163,26 @@ Key interpretation:
 > Reviewing only the lowest-confidence 10% of articles captured 35.72% of all classification errors.
 
 This shows that the decision-margin signal can help prioritize human review resources toward higher-risk predictions.
+
+### Calibrated Confidence Results
+
+Phase 1D used the same 40,000/10,000 train-test split and compared calibrated probabilities with a Logistic Regression probability baseline.
+
+| Model                                            | Accuracy | Macro-F1 | Log Loss | Brier Score | Top-label ECE |
+| ------------------------------------------------ | -------: | -------: | -------: | ----------: | ------------: |
+| Linear SVM + sigmoid calibration                 |   82.61% |   82.87% |   0.6004 |      0.2533 |        0.0529 |
+| Logistic Regression probability baseline         |   81.13% |   81.54% |   0.8448 |      0.3542 |        0.2487 |
+
+The calibrated confidence signal was also compared with the raw Linear SVM margin for review prioritization:
+
+| Review budget | Raw margin: errors captured | Calibrated confidence: errors captured | Random expected |
+| ------------: | --------------------------: | -------------------------------------: | --------------: |
+|            5% |                      18.57% |                                 20.39% |           5.00% |
+|           10% |                      35.72% |                                 36.97% |          10.00% |
+|           20% |                      60.08% |                                 61.50% |          20.00% |
+|           30% |                      77.91% |                                 78.65% |          30.00% |
+
+These results suggest that calibrated confidence can make the review-priority signal more interpretable while remaining competitive with the raw margin ranking. The result is still an offline held-out diagnostic, not a production validation.
 
 ### Clustering Diagnostic
 
@@ -172,12 +220,14 @@ chinese-news-classification-clustering/
 ├── .gitignore
 ├── configs/
 │   ├── clean_baseline.json
+│   ├── calibration.json
 │   └── historical_compat.json
 ├── data/
 │   └── README.md
 ├── docs/
 │   ├── algorithm-audit.md
 │   ├── editorial-triage-analysis.md
+│   ├── confidence-calibration-analysis.md
 │   └── reproducibility.md
 ├── report/
 │   └── README.md
@@ -195,6 +245,11 @@ chinese-news-classification-clustering/
 │           ├── review_priority_summary.json
 │           ├── review_triage_curve.csv
 │           └── top_confusion_pairs.csv
+│       └── 20260623T215102Z/
+│           ├── calibration_bins.csv
+│           ├── calibration_metrics.csv
+│           ├── calibration_summary.json
+│           └── review_triage_calibrated_curve.csv
 └── src/
     ├── classify.py
     ├── cluster.py
@@ -203,6 +258,7 @@ chinese-news-classification-clustering/
     └── repro_pipeline/
         ├── __init__.py
         ├── classification.py
+        ├── calibration.py
         ├── cli.py
         ├── clustering.py
         ├── data.py
@@ -218,6 +274,8 @@ Phase 1A was documentation and presentation cleanup only. No scripts were execut
 Phase 1B added an independent reproducibility audit pipeline. The historical TF-IDF + Linear SVM and TF-IDF + Logistic Regression classification metrics were regenerated and matched the original course report at reported precision.
 
 Phase 1C added editorial review triage analysis. It used Linear SVM decision margins to prioritize low-confidence predictions for human review.
+
+Phase 1D adds calibrated confidence analysis. It evaluates calibrated probabilities as an interpretable confidence signal while keeping the raw decision margin as a separate review-ranking signal.
 
 Raw news data are not included in this repository, so the public repository does **not** claim standalone end-to-end reproducibility. The repository documents the pipeline, metadata, and regenerated outputs, but anyone wishing to run the scripts must obtain the appropriate dataset separately.
 

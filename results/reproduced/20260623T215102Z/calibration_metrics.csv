@@ -1,0 +1,11 @@
+model,metric,value,unit
+TF-IDF + Linear SVM + sigmoid calibration,Accuracy,0.8261,ratio
+TF-IDF + Linear SVM + sigmoid calibration,Macro-F1,0.8287387843940589,ratio
+TF-IDF + Linear SVM + sigmoid calibration,Log Loss,0.6004136995000022,loss
+TF-IDF + Linear SVM + sigmoid calibration,Multiclass Brier Score,0.2533056613846662,score
+TF-IDF + Linear SVM + sigmoid calibration,Top-label ECE,0.052941014861291755,score
+TF-IDF + Logistic Regression probability baseline,Accuracy,0.8113,ratio
+TF-IDF + Logistic Regression probability baseline,Macro-F1,0.8154267743404819,ratio
+TF-IDF + Logistic Regression probability baseline,Log Loss,0.8447785884947836,loss
+TF-IDF + Logistic Regression probability baseline,Multiclass Brier Score,0.3542020452127365,score
+TF-IDF + Logistic Regression probability baseline,Top-label ECE,0.2487034525134492,score

@@ -12,6 +12,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from .calibration import (
+    run_calibrated_confidence_analysis,
+    write_calibration_outputs,
+)
 from .classification import (
     run_clean_baseline,
     run_editorial_triage,
@@ -56,11 +60,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--data", required=True, help="Local cnews.train.txt file (never copied).")
     parser.add_argument("--historical-config", default="configs/historical_compat.json")
     parser.add_argument("--clean-config", default="configs/clean_baseline.json")
+    parser.add_argument("--calibration-config", default="configs/calibration.json")
     parser.add_argument("--output-root", default="results/reproduced")
+    parser.add_argument("--figures-root", default="results/figures")
     parser.add_argument(
         "--editorial-triage-only",
         action="store_true",
         help="Run only the Phase 1C-minimal clean SVM editorial-triage analysis.",
+    )
+    parser.add_argument(
+        "--calibration-only",
+        action="store_true",
+        help="Run only the Phase 1D calibrated confidence analysis.",
     )
     parser.add_argument(
         "--selected-c",
@@ -75,6 +86,7 @@ def main() -> int:
     args = build_parser().parse_args()
     historical_config = _load_json(args.historical_config)
     clean_config = _load_json(args.clean_config)
+    calibration_config = _load_json(args.calibration_config)
     expected = historical_config["dataset"]
 
     dataset = load_validated_dataset(
@@ -102,6 +114,25 @@ def main() -> int:
             analysis,
         )
         print(f"Wrote editorial-triage results to {output_directory.as_posix()}")
+        return 0
+
+    if args.calibration_only:
+        run_id = make_run_id()
+        analysis = run_calibrated_confidence_analysis(
+            dataset.texts,
+            dataset.labels,
+            clean_config,
+            calibration_config,
+            selected_c=args.selected_c,
+        )
+        analysis["summary"]["run_id"] = run_id
+        output_directory = write_calibration_outputs(
+            args.output_root,
+            args.figures_root,
+            run_id,
+            analysis,
+        )
+        print(f"Wrote calibrated-confidence results to {output_directory.as_posix()}")
         return 0
 
     historical_result = run_historical_compat(dataset.texts, dataset.labels, historical_config)

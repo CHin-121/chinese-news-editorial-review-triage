@@ -1,0 +1,25 @@
+{
+  "name": "calibrated_confidence_analysis",
+  "model": {
+    "vectorizer": "tfidf",
+    "base_classifier": "LinearSVC",
+    "calibration_method": "sigmoid",
+    "cv": 5,
+    "ensemble": true
+  },
+  "evaluation": {
+    "confidence_bins": 10,
+    "review_budgets": [0.05, 0.10, 0.20, 0.30],
+    "metrics": [
+      "accuracy",
+      "macro_f1",
+      "log_loss",
+      "multiclass_brier_score",
+      "top_label_ece"
+    ]
+  },
+  "notes": {
+    "purpose": "offline calibrated confidence analysis for editorial review triage",
+    "not_claimed_as": "production deployment"
+  }
+}
